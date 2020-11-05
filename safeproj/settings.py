@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'requests',
-    'bootstrap3',
+    #'bootstrap3',
     'safeapp',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,78 +1,37 @@
-from django.shortcuts import render,redirect,HttpResponseRedirect
 import requests
-import json
-import urllib.request
-import .models import City
+from django.shortcuts import render
+from .models import City
+from .forms import CityForm
+from django.http import HttpResponse, Http404,HttpResponseRedirect
 
 
-def home(request):
-    url = ''
-    city = 'Nairobi'
+def index(request):
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=a2266fa9662a60dc5cf931b59c7f3a88'
 
-    cities =city.objects.all()
+    if request.method == 'POST':
+        form = CityForm(request.POST)
+        if form.is_valid():
+            data = form.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER')) 
 
-    r = requests.get(url.format(city)).json()
+    form = CityForm()
 
-    city_weather = {
-        'city': city ,
-        'temperature': r [main][temp],
-        'description': r ['weather'][0][description] ,
-        'icon':r ['weather'][0][icon] ,
-    }
-     
-    contact ={ 'city_weather' : city_weather}
-    return render(request, 'weather/home.html')
-#     data={}
-#     data={}
-#     if request.method == 'POST':
-        
-#     # Try block to catch 
-#         city = request.POST['city']
-#         city = 'Nairobi'
+    cities = City.objects.all()
 
+    weather_data = []
 
-#         try:
-#             # int('sy')
-            
-#             source = requests.get('https://openweathermap.org/data/2.5/weather?q='+city+'&appid=b6907d289e10d714a6e88b30761fae22')
-#             if not source.status_code//100  == 2:
-            
-#                 return redirect('error')  
-#             source2 = requests.get('https://weather.cit.api.here.com/weather/1.0/report.json?product=alerts&name='+city+'&app_id=DemoAppId01082013GAL&app_code=AJKnXv84fjrb0KIHawS0Tg')
-             
-#     # converting JSON data to a dictionary 
-#             if source.status_code == 200 and  source2.status_code == 200:
-#                 list_of_data = json.loads(source.content)
-#                 list_of_data2 = json.loads(source2.content)
-#                 print(type(list_of_data),'============================')
-#                 data = {
-#                 "country_code": str(list_of_data['sys']['country']), 
-#                 "coordinate": str(list_of_data['coord']['lon']) + ' '
-#                         + str(list_of_data['coord']['lat']), 
-#                 "temp": str(list_of_data['main']['temp']) + 'k', 
-#                 "pressure": str(list_of_data['main']['pressure']), 
-#                 "humidity": str(list_of_data['main']['humidity']), 
-#                 }
-#                 if list_of_data2['alerts']['alerts'] == []:
-#                             data2 = {
-#                                 "city": str(list_of_data2['alerts']['city']),
-#                                 "alerts": "Weather is not extreem in " + city
+    for city in cities:
 
-#                             }
-#             # print(list_of_data2)
-#                 else:
-#                     data2 = {
-#                         "city": str(list_of_data2['alerts']['city']),
-#                         "alerts": str(list_of_data2['alerts']['alerts'][0]['description'] + '. Stay safe')
+        r = requests.get(url.format(city)).json()
+        print(r)
+        city_weather = {
+            'city' : city.name,
+            'temperature' : r['main']['temp'],
+            'description' : r['weather'][0]['description'],
+            'icon' : r['weather'][0]['icon'],
+        }
 
-#                     }                
-#         except requests.exceptions.HTTPError as err:
-#             print('------------')
-            
-#         except requests.exceptions.RequestException as e:
-#             print(e)
+        weather_data.append(city_weather)
 
-#     return render(request,'weather/home.html',locals())
-
-# def error(request):
-#     return render(request, 'weather/500.html')
+    # context = {'weather_data' : weather_data, 'form' : form}
+    return render(request, 'weather/weather.html', {'form':CityForm, 'data' : weather_data})

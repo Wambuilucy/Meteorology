@@ -1,0 +1,91 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+</head>
+
+<body>
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    What's the weather like?
+                </h1>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                                {% bootstrap_form form %}
+                                
+                                <button type="submit" class="button is-info">
+                                    Add City
+                                </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="row">
+        <div class="col-md-4">
+            {% for items in data %}
+            <div class="card">
+
+                <h2>{{ items.city}}</h2>
+                <h3>Cloudy<span>Wind 10km/h <span class="dot">•</span> Precip 0%</span></h3>
+                <h1>{{ items.temperature }} <div class="circle-small"></div>F</h1>
+                <div class="sky">
+                    <div class="sun"></div>
+                    <div class="cloud">
+                        <div class="circle-small"></div>
+                        <div class="circle-tall"></div>
+                        <div class="circle-medium"></div>
+                    </div>
+                </div>
+                <table>
+                    <tr>
+                        <td>TUE</td>
+                        <td>WED</td>
+                        <td>THU</td>
+                        <td>FRI</td>
+                        <td>SAT</td>
+                    </tr>
+                    <tr>
+                        <td>30°</td>
+                        <td>34°</td>
+                        <td>36°</td>
+                        <td>34°</td>
+                        <td>37°</td>
+                    </tr>
+                    <tr>
+                        <td>17°</td>
+                        <td>22°</td>
+                        <td>19°</td>
+                        <td>23°</td>
+                        <td>19°</td>
+                    </tr>
+                </table>
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>                
+              
+    <footer class="footer">
+    </footer>
+</body>
+
+</html>
